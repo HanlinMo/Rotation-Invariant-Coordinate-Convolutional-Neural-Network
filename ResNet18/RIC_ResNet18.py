@@ -1,9 +1,3 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[12]:
-
-
 from __future__ import absolute_import, division
 import torch
 import torch.nn.functional as F
@@ -22,37 +16,63 @@ class RIC_ResNet(nn.Module):
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
         
-        self.coords_b1_1 = self.generate_coordinates(BATCH_SIZE, 64, 64)
+        ####################################################################################
+        self.coords_b1 = self.generate_coordinates(BATCH_SIZE, 64, 64)
         self.conv_b1_1 = nn.Conv2d(64, 64, kernel_size=(3,3), stride=1, padding=1, bias=False)
         self.bn_b1_1 = nn.BatchNorm2d(64)
-        self.coords_b1_2 = self.generate_coordinates(BATCH_SIZE, 64, 64)
         self.conv_b1_2 = nn.Conv2d(64, 64, kernel_size=(3,3), stride=1, padding=1, bias=False)
         self.bn_b1_2 = nn.BatchNorm2d(64)
-        self.downsample_b1 = nn.Sequential()
+        self.downsample_b1_1 = nn.Sequential()
         
-        self.coords_b2_1 = self.generate_coordinates(BATCH_SIZE, 32, 32)
+        self.conv_b1_3 = nn.Conv2d(64, 64, kernel_size=(3,3), stride=1, padding=1, bias=False)
+        self.bn_b1_3 = nn.BatchNorm2d(64)
+        self.conv_b1_4 = nn.Conv2d(64, 64, kernel_size=(3,3), stride=1, padding=1, bias=False)
+        self.bn_b1_4 = nn.BatchNorm2d(64)
+        self.downsample_b1_2 = nn.Sequential()
+        
+        #######################################################################################
+        self.coords_b2 = self.generate_coordinates(BATCH_SIZE, 32, 32)
         self.conv_b2_1 = nn.Conv2d(64, 128, kernel_size=(3, 3), stride=2, padding=1, bias=False)
         self.bn_b2_1 = nn.BatchNorm2d(128)
-        self.coords_b2_2 = self.generate_coordinates(BATCH_SIZE, 32, 32)
         self.conv_b2_2 = nn.Conv2d(128, 128, kernel_size=(3, 3), stride=1, padding=1, bias=False)
         self.bn_b2_2 = nn.BatchNorm2d(128)
-        self.downsample_b2 = nn.Sequential(nn.Conv2d(64, 128, kernel_size=1, stride=2, bias=False), nn.BatchNorm2d(128))
+        self.downsample_b2_1 = nn.Sequential(nn.Conv2d(64, 128, kernel_size=1, stride=2, bias=False), nn.BatchNorm2d(128))
         
-        self.coords_b3_1 = self.generate_coordinates(BATCH_SIZE, 16, 16)
+        self.conv_b2_3 = nn.Conv2d(128, 128, kernel_size=(3, 3), stride=1, padding=1, bias=False)
+        self.bn_b2_3 = nn.BatchNorm2d(128)
+        self.conv_b2_4 = nn.Conv2d(128, 128, kernel_size=(3, 3), stride=1, padding=1, bias=False)
+        self.bn_b2_4 = nn.BatchNorm2d(128)
+        self.downsample_b2_2 = nn.Sequential()
+        
+        #######################################################################################
+        self.coords_b3 = self.generate_coordinates(BATCH_SIZE, 16, 16)
         self.conv_b3_1 = nn.Conv2d(128, 256, kernel_size=(3, 3), stride=2, padding=1, bias=False)
         self.bn_b3_1 = nn.BatchNorm2d(256)
-        self.coords_b3_2 = self.generate_coordinates(BATCH_SIZE, 16, 16)
         self.conv_b3_2 = nn.Conv2d(256, 256, kernel_size=(3, 3), stride=1, padding=1, bias=False)
         self.bn_b3_2 = nn.BatchNorm2d(256)
-        self.downsample_b3 = nn.Sequential(nn.Conv2d(128, 256, kernel_size=1, stride=2, bias=False), nn.BatchNorm2d(256))
+        self.downsample_b3_1 = nn.Sequential(nn.Conv2d(128, 256, kernel_size=1, stride=2, bias=False), nn.BatchNorm2d(256))
         
-        self.coords_b4_1 = self.generate_coordinates(BATCH_SIZE, 8, 8)
+        self.conv_b3_3 = nn.Conv2d(256, 256, kernel_size=(3, 3), stride=1, padding=1, bias=False)
+        self.bn_b3_3 = nn.BatchNorm2d(256)
+        self.conv_b3_4 = nn.Conv2d(256, 256, kernel_size=(3, 3), stride=1, padding=1, bias=False)
+        self.bn_b3_4 = nn.BatchNorm2d(256)
+        self.downsample_b3_2 = nn.Sequential()
+        
+        #######################################################################################
+        self.coords_b4 = self.generate_coordinates(BATCH_SIZE, 8, 8)
         self.conv_b4_1 = nn.Conv2d(256, 512, kernel_size=(3, 3), stride=2, padding=1, bias=False)
         self.bn_b4_1 = nn.BatchNorm2d(512)
-        self.coords_b4_2 = self.generate_coordinates(BATCH_SIZE, 8, 8)
         self.conv_b4_2 = nn.Conv2d(512, 512, kernel_size=(3, 3), stride=1, padding=1, bias=False)
         self.bn_b4_2 = nn.BatchNorm2d(512)
-        self.downsample_b4 = nn.Sequential(nn.Conv2d(256, 512, kernel_size=1, stride=2, bias=False), nn.BatchNorm2d(512))
+        self.downsample_b4_1 = nn.Sequential(nn.Conv2d(256, 512, kernel_size=1, stride=2, bias=False), nn.BatchNorm2d(512))
+        
+        self.conv_b4_3 = nn.Conv2d(512, 512, kernel_size=(3, 3), stride=1, padding=1, bias=False)
+        self.bn_b4_3 = nn.BatchNorm2d(512)
+        self.conv_b4_4 = nn.Conv2d(512, 512, kernel_size=(3, 3), stride=1, padding=1, bias=False)
+        self.bn_b4_4 = nn.BatchNorm2d(512)
+        self.downsample_b4_2 = nn.Sequential()
+        
+        #######################################################################################
         
         self.avgpool = nn.AvgPool2d(kernel_size=8, stride=8, padding=0)
         self.fc = nn.Linear(512, 30)
@@ -130,43 +150,83 @@ class RIC_ResNet(nn.Module):
         x = self.relu(x)
         x = self.maxpool(x)
         
+        ####################################################################################        
         Temp = x
-        x = torchvision.ops.deform_conv2d(input=x, offset=self.coords_b1_1, weight=self.conv_b1_1.weight, padding=(1,1)) 
+        x = torchvision.ops.deform_conv2d(input=x, offset=self.coords_b1, weight=self.conv_b1_1.weight, padding=(1,1)) 
         x = self.bn_b1_1(x)
         x = self.relu(x)
-        x = torchvision.ops.deform_conv2d(input=x, offset=self.coords_b1_2, weight=self.conv_b1_2.weight, padding=(1,1)) 
+        x = torchvision.ops.deform_conv2d(input=x, offset=self.coords_b1, weight=self.conv_b1_2.weight, padding=(1,1)) 
         x = self.bn_b1_2(x)
-        x += self.downsample_b1(Temp)
+        x += self.downsample_b1_1(Temp)
         x = self.relu(x)
-         
+        
         Temp = x
-        x = torchvision.ops.deform_conv2d(input=x, offset=self.coords_b2_1, weight=self.conv_b2_1.weight, stride=2, padding=(1,1)) 
+        x = torchvision.ops.deform_conv2d(input=x, offset=self.coords_b1, weight=self.conv_b1_3.weight, padding=(1,1)) 
+        x = self.bn_b1_3(x)
+        x = self.relu(x)
+        x = torchvision.ops.deform_conv2d(input=x, offset=self.coords_b1, weight=self.conv_b1_4.weight, padding=(1,1)) 
+        x = self.bn_b1_4(x)
+        x += self.downsample_b1_2(Temp)
+        x = self.relu(x)
+        
+        #################################################################################### 
+        Temp = x
+        x = torchvision.ops.deform_conv2d(input=x, offset=self.coords_b2, weight=self.conv_b2_1.weight, stride=2, padding=(1,1)) 
         x = self.bn_b2_1(x)
         x = self.relu(x)
-        x = torchvision.ops.deform_conv2d(input=x, offset=self.coords_b2_2, weight=self.conv_b2_2.weight, padding=(1,1)) 
+        x = torchvision.ops.deform_conv2d(input=x, offset=self.coords_b2, weight=self.conv_b2_2.weight, padding=(1,1)) 
         x = self.bn_b2_2(x)
-        x += self.downsample_b2(Temp)
+        x += self.downsample_b2_1(Temp)
         x = self.relu(x)
         
         Temp = x
-        x = torchvision.ops.deform_conv2d(input=x, offset=self.coords_b3_1, weight=self.conv_b3_1.weight, stride=2, padding=(1,1)) 
+        x = torchvision.ops.deform_conv2d(input=x, offset=self.coords_b2, weight=self.conv_b2_3.weight, padding=(1,1)) 
+        x = self.bn_b2_3(x)
+        x = self.relu(x)
+        x = torchvision.ops.deform_conv2d(input=x, offset=self.coords_b2, weight=self.conv_b2_4.weight, padding=(1,1)) 
+        x = self.bn_b2_4(x)
+        x += self.downsample_b2_2(Temp)
+        x = self.relu(x)
+        
+        #################################################################################### 
+        Temp = x
+        x = torchvision.ops.deform_conv2d(input=x, offset=self.coords_b3, weight=self.conv_b3_1.weight, stride=2, padding=(1,1)) 
         x = self.bn_b3_1(x)
         x = self.relu(x)
-        x = torchvision.ops.deform_conv2d(input=x, offset=self.coords_b3_2, weight=self.conv_b3_2.weight, padding=(1,1)) 
+        x = torchvision.ops.deform_conv2d(input=x, offset=self.coords_b3, weight=self.conv_b3_2.weight, padding=(1,1)) 
         x = self.bn_b3_2(x)
-        x += self.downsample_b3(Temp)
+        x += self.downsample_b3_1(Temp)
         x = self.relu(x)
         
         Temp = x
-
-        x = torchvision.ops.deform_conv2d(input=x, offset=self.coords_b4_1, weight=self.conv_b4_1.weight, stride=2, padding=(1,1)) 
-        x = self.bn_b4_1(x)
+        x = torchvision.ops.deform_conv2d(input=x, offset=self.coords_b3, weight=self.conv_b3_3.weight, padding=(1,1)) 
+        x = self.bn_b3_3(x)
         x = self.relu(x)
-        x = torchvision.ops.deform_conv2d(input=x, offset=self.coords_b4_2, weight=self.conv_b4_2.weight, padding=(1,1)) 
-        x = self.bn_b4_2(x)
-        x += self.downsample_b4(Temp)
+        x = torchvision.ops.deform_conv2d(input=x, offset=self.coords_b3, weight=self.conv_b3_4.weight, padding=(1,1)) 
+        x = self.bn_b3_4(x)
+        x += self.downsample_b3_2(Temp)
         x = self.relu(x)
         
+        #################################################################################### 
+        Temp = x
+        x = torchvision.ops.deform_conv2d(input=x, offset=self.coords_b4, weight=self.conv_b4_1.weight, stride=2, padding=(1,1)) 
+        x = self.bn_b4_1(x)
+        x = self.relu(x)
+        x = torchvision.ops.deform_conv2d(input=x, offset=self.coords_b4, weight=self.conv_b4_2.weight, padding=(1,1)) 
+        x = self.bn_b4_2(x)
+        x += self.downsample_b4_1(Temp)
+        x = self.relu(x)
+        
+        Temp = x
+        x = torchvision.ops.deform_conv2d(input=x, offset=self.coords_b4, weight=self.conv_b4_3.weight, padding=(1,1)) 
+        x = self.bn_b4_3(x)
+        x = self.relu(x)
+        x = torchvision.ops.deform_conv2d(input=x, offset=self.coords_b4, weight=self.conv_b4_4.weight, padding=(1,1)) 
+        x = self.bn_b4_4(x)
+        x += self.downsample_b4_2(Temp)
+        x = self.relu(x)
+        
+        #################################################################################### 
         x = self.avgpool(x)
         x = torch.flatten(x,1)
         x = self.fc(x)
